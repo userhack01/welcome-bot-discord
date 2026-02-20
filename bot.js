@@ -1,54 +1,47 @@
+// ============================================
+// WILLKOMMENS-BOT - NEUE VERSION
+// ============================================
+
 const { Client, GatewayIntentBits } = require('discord.js');
 
-// ===== DEINE DATEN =====
-const TOKEN ='MTQ3NDM0ODM1MzkxNDY2NzEzMg.G3HS2X.5IkV8zF2d-v4aJ8G8R1Da4vXRowg0l5s9P78Xc';     // ← Hier NEUEN Token einfügen!
-const CLIENT_ID = '1474348353914667132';          // ← Deine Client ID
+// ===== DEINE DATEN (NACH RESET!) =====
+// ⚠️ Achtung: Token musst du im Developer Portal neu holen!
+const TOKEN = 'MTQ3NDM0ODM1MzkxNDY2NzEzMg.GSan6W.IWKd3-vukrEKCMFmdIWePZi29DbGnbptB8X59Y';
+const CLIENT_ID = '1474348353914667132';
 
-// ===== BOT SETUP =====
+// Bot erstellen
 const client = new Client({ 
     intents: [
         GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMembers,           // Für Member-Events
-        GatewayIntentBits.GuildMessages,           // Für Nachrichten
-        GatewayIntentBits.MessageContent           // Für !-Befehle
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent
     ] 
 });
 
-// ===== BOT IST ONLINE =====
+// Bot ist bereit
 client.once('ready', () => {
     console.log('══════════════════════════════');
-    console.log(`✅ Bot ist online!`);
-    console.log(`📛 Name: ${client.user.tag}`);
+    console.log(`✅ ${client.user.tag} ist online!`);
     console.log(`🆔 Client ID: ${CLIENT_ID}`);
     console.log(`📊 Server: ${client.guilds.cache.size}`);
     console.log('══════════════════════════════');
     
-    // Status setzen
     client.user.setActivity('!hilfe', { type: 'PLAYING' });
 });
 
 // ===== WILLKOMMENS-NACHRICHT =====
 client.on('guildMemberAdd', async (member) => {
     try {
-        // Suche einen passenden Kanal
-        const channelNames = ['willkommen', 'allgemein', 'chat', 'welcome'];
-        let channel = null;
-        
-        for (const name of channelNames) {
-            channel = member.guild.channels.cache.find(c => 
-                c.name.toLowerCase().includes(name) && c.type === 0
-            );
-            if (channel) break;
-        }
-        
-        // Wenn kein Kanal gefunden, nimm den ersten Textkanal
-        if (!channel) {
-            channel = member.guild.channels.cache.find(c => c.type === 0);
-        }
+        // Sucht nach Willkommens-Kanälen
+        const channel = member.guild.channels.cache.find(c => 
+            c.name === 'allgemein' || 
+            c.name === 'willkommen' || 
+            c.name === 'chat'
+        );
         
         if (channel) {
-            const welcomeMsg = `👋 Hallo ${member}! Willkommen auf **${member.guild.name}**!`;
-            await channel.send(welcomeMsg);
+            await channel.send(`👋 Hallo ${member}! Willkommen auf **${member.guild.name}**!`);
             console.log(`✅ Willkommen gesendet an ${member.user.tag}`);
         }
     } catch (error) {
@@ -56,29 +49,28 @@ client.on('guildMemberAdd', async (member) => {
     }
 });
 
-// ===== NACHRICHTEN-BEFEHLE =====
+// ===== BEFEHLE =====
 client.on('messageCreate', async (message) => {
     if (message.author.bot) return;
     
-    // !test - Bot-Test
+    // !test
     if (message.content === '!test') {
         await message.reply('✅ Bot funktioniert!');
         console.log(`📝 !test von ${message.author.tag}`);
     }
     
-    // !hilfe - Hilfe anzeigen
+    // !hilfe
     if (message.content === '!hilfe') {
-        const helpText = `
+        await message.reply(`
 📋 **BEFEHLE:**
 !test     - Testet ob Bot läuft
 !hilfe    - Zeigt diese Hilfe
 !info     - Zeigt Bot-Info
 !ping     - Pong!
-        `;
-        await message.reply(helpText);
+        `);
     }
     
-    // !info - Bot-Info anzeigen
+    // !info
     if (message.content === '!info') {
         await message.reply(`
 🤖 **BOT INFO**
@@ -89,11 +81,11 @@ Mitglieder: ${message.guild?.memberCount || 1}
         `);
     }
     
-    // !ping - Ping-Test
+    // !ping
     if (message.content === '!ping') {
         await message.reply('Pong! 🏓');
     }
 });
 
-// ===== BOT STARTEN =====
+// Bot starten
 client.login(TOKEN);
