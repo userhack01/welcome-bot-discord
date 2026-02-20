@@ -1,25 +1,39 @@
 const { Client, GatewayIntentBits } = require('discord.js');
-require('dotenv').config();
 
+// ===== DEINE DATEN =====
+const TOKEN = 'MTQ3NDM0ODM1MzkxNDY2NzEzMg.GMELph.cQPszjy9fxqm0p01-tXgVmDLRCGYVfCqVYaG3o';     // ← Hier NEUEN Token einfügen!
+const CLIENT_ID = '1474348353914667132';          // ← Deine Client ID
+
+// ===== BOT SETUP =====
 const client = new Client({ 
     intents: [
         GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMembers  // Wichtig für Member-Events!
+        GatewayIntentBits.GuildMembers,           // Für Member-Events
+        GatewayIntentBits.GuildMessages,           // Für Nachrichten
+        GatewayIntentBits.MessageContent           // Für !-Befehle
     ] 
 });
 
+// ===== BOT IST ONLINE =====
 client.once('ready', () => {
-    console.log(`✅ ${client.user.tag} ist online und begrüßt neue Mitglieder!`);
-    console.log(`🔧 Bot ist auf ${client.guilds.cache.size} Servern`);
+    console.log('══════════════════════════════');
+    console.log(`✅ Bot ist online!`);
+    console.log(`📛 Name: ${client.user.tag}`);
+    console.log(`🆔 Client ID: ${CLIENT_ID}`);
+    console.log(`📊 Server: ${client.guilds.cache.size}`);
+    console.log('══════════════════════════════');
+    
+    // Status setzen
+    client.user.setActivity('!hilfe', { type: 'PLAYING' });
 });
 
-// 👋 Wenn jemand beitritt
+// ===== WILLKOMMENS-NACHRICHT =====
 client.on('guildMemberAdd', async (member) => {
     try {
-        // Sucht nach Willkommens-Kanälen
-        const channelNames = ['willkommen', 'ankünfte', 'allgemein', 'welcome', 'ankunft'];
-        
+        // Suche einen passenden Kanal
+        const channelNames = ['willkommen', 'allgemein', 'chat', 'welcome'];
         let channel = null;
+        
         for (const name of channelNames) {
             channel = member.guild.channels.cache.find(c => 
                 c.name.toLowerCase().includes(name) && c.type === 0
@@ -27,74 +41,59 @@ client.on('guildMemberAdd', async (member) => {
             if (channel) break;
         }
         
-        // Falls kein passender Kanal, nimm den ersten Textkanal
+        // Wenn kein Kanal gefunden, nimm den ersten Textkanal
         if (!channel) {
             channel = member.guild.channels.cache.find(c => c.type === 0);
         }
         
         if (channel) {
-            // Verschiedene Begrüßungen (Zufall)
-            const greetings = [
-                `👋 Hallo ${member}! Willkommen auf **${member.guild.name}**!`,
-                `🎉 ${member} ist dem Server beigetreten! Herzlich willkommen!`,
-                `🌟 Ein neuer User: ${member}! Schön dass du da bist!`,
-                `🤝 Willkommen ${member}! Viel Spaß hier!`,
-                `👋 Hey ${member}, willkommen im Club!`
-            ];
-            
-            const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
-            await channel.send(randomGreeting);
-            console.log(`✅ Begrüßung gesendet an ${member.user.tag}`);
+            const welcomeMsg = `👋 Hallo ${member}! Willkommen auf **${member.guild.name}**!`;
+            await channel.send(welcomeMsg);
+            console.log(`✅ Willkommen gesendet an ${member.user.tag}`);
         }
     } catch (error) {
-        console.error('❌ Fehler bei Begrüßung:', error.message);
+        console.error('❌ Fehler bei Willkommen:', error.message);
     }
 });
 
-// 👋 Wenn jemand geht (optional)
-client.on('guildMemberRemove', async (member) => {
-    try {
-        const channel = member.guild.channels.cache.find(c => 
-            c.name.toLowerCase().includes('allgemein') || 
-            c.name.toLowerCase().includes('chat')
-        );
-        
-        if (channel) {
-            const goodbyes = [
-                `👋 ${member.user.tag} hat den Server verlassen. Tschüss!`,
-                `😢 ${member.user.tag} ist gegangen...`,
-                `👋 Bis bald ${member.user.tag}!`
-            ];
-            
-            const randomGoodbye = goodbyes[Math.floor(Math.random() * goodbyes.length)];
-            await channel.send(randomGoodbye);
-        }
-    } catch (error) {
-        console.error('❌ Fehler bei Verabschiedung:', error.message);
-    }
-});
-
-// Einfacher Test-Befehl
+// ===== NACHRICHTEN-BEFEHLE =====
 client.on('messageCreate', async (message) => {
     if (message.author.bot) return;
     
+    // !test - Bot-Test
     if (message.content === '!test') {
         await message.reply('✅ Bot funktioniert!');
+        console.log(`📝 !test von ${message.author.tag}`);
     }
     
+    // !hilfe - Hilfe anzeigen
     if (message.content === '!hilfe') {
+        const helpText = `
+📋 **BEFEHLE:**
+!test     - Testet ob Bot läuft
+!hilfe    - Zeigt diese Hilfe
+!info     - Zeigt Bot-Info
+!ping     - Pong!
+        `;
+        await message.reply(helpText);
+    }
+    
+    // !info - Bot-Info anzeigen
+    if (message.content === '!info') {
         await message.reply(`
-📋 **Willkommens-Bot Befehle:**
-!test - Testet ob Bot läuft
-!hilfe - Zeigt diese Hilfe
-!status - Zeigt Bot-Status
+🤖 **BOT INFO**
+Name: ${client.user.tag}
+Client ID: ${CLIENT_ID}
+Server: ${message.guild?.name || 'DM'}
+Mitglieder: ${message.guild?.memberCount || 1}
         `);
     }
     
-    if (message.content === '!status') {
-        await message.reply(`✅ Bot ist online auf **${message.guild?.name || 'DM'}**`);
+    // !ping - Ping-Test
+    if (message.content === '!ping') {
+        await message.reply('Pong! 🏓');
     }
 });
 
-// Token aus .env
-client.login(process.env.DISCORD_TOKEN);
+// ===== BOT STARTEN =====
+client.login(TOKEN);
