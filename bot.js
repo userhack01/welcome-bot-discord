@@ -1,7 +1,7 @@
 const { Client, GatewayIntentBits } = require('discord.js');
 
 // ===== DEINE DATEN =====
-const TOKEN = 'MTQ3NDM0ODM1MzkxNDY2NzEzMg.GMELph.cQPszjy9fxqm0p01-tXgVmDLRCGYVfCqVYaG3o';     // ← Hier NEUEN Token einfügen!
+const TOKEN ='MTQ3NDM0ODM1MzkxNDY2NzEzMg.G3HS2X.5IkV8zF2d-v4aJ8G8R1Da4vXRowg0l5s9P78Xc';     // ← Hier NEUEN Token einfügen!
 const CLIENT_ID = '1474348353914667132';          // ← Deine Client ID
 
 // ===== BOT SETUP =====
