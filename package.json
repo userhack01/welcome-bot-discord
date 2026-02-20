@@ -1,20 +1,12 @@
 {
   "name": "willkommen-bot",
   "version": "1.0.0",
-  "description": "Einfacher Discord Willkommens-Bot",
+  "description": "Discord Willkommens-Bot",
   "main": "bot.js",
   "scripts": {
-    "start": "node bot.js",
-    "dev": "nodemon bot.js"
+    "start": "node bot.js"
   },
   "dependencies": {
-    "discord.js": "^14.14.1",
-    "dotenv": "^16.3.1"
-  },
-  "devDependencies": {
-    "nodemon": "^3.0.1"
-  },
-  "engines": {
-    "node": ">=16.9.0"
+    "discord.js": "^14.14.1"
   }
 }
